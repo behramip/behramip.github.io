@@ -4,26 +4,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    .button-19 {
+      appearance: button;
+      background-color: #1899D6;
+      border: solid transparent;
+      border-radius: 16px;
+      border-width: 0 0 4px;
+      box-sizing: border-box;
+      color: #FFFFFF;
+      cursor: pointer;
+      display: inline-block;
+      font-family: din-round,sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      line-height: 10px;
+      margin-left: 0 5px;
+      outline: none;
+      overflow: visible;
+      padding: 13px 16px;
+      text-align: center;
+      text-transform: uppercase;
+      touch-action: manipulation;
+      transform: translateZ(0);
+      transition: filter .2s;
+      user-select: none;
+      -webkit-user-select: none;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .button-19:after {
+      background-clip: padding-box;
+      background-color: #1CB0F6;
+      border: solid transparent;
+      border-radius: 16px;
+      border-width: 0 0 4px;
+      bottom: -4px;
+      content: "";
+      left: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: -1;
+    }
+
+    .button-19:main,
+    .button-19:focus {
+      user-select: auto;
+    }
+
+    .button-19:hover:not(:disabled) {
+      filter: brightness(1.1);
+      -webkit-filter: brightness(1.1);
+    }
+
+    .button-19:disabled {
+      cursor: auto;
+    }
+
+    .button-19:active {
+      border-width: 4px 0 0;
+      background: none;
+    }
+  </style>
 </head>
 <body>
-  <input id="main-input" style="width: 500px;" />  
-  <button onclick="run()">Ukaž vlak</button>
+  <input id="main-input" style="width: 500px; height: 30px; border-radius:10px" />  
+  <button class="button-19" onclick="run()">Ukaž vlak</button>
   <span id="prompt-span"></span>
   <div>
-    <img id="main-img" width="1024" height="768" style="margin-top: 1em;"/>
+    <img id="main-img" width="1024" height="768" style="margin-top: 1em; display: none;"/>
   </div>
 </body>
 
 <script>
   const colorArr = ['red', 'yellow', 'blue', 'green', 'purple', 'orange'];
-  const trainTypeArr = ['cargo', 'passenger', 'post']
+  const trainTypeArr = ['cargo', 'passenger', 'freight', 'steam']
   const sceneriesArr = ['countryside', 'city', 'mountains', 'forest', 'desert']
 
   async function run() {
-    const imgNode = document.getElementById('main-img'); 
-    imgNode.setAttribute('src', 'loader3.gif')
-
     const token = document.getElementById('main-input').value;
+
+    if (!token){
+      alert('Token nebyl zadán');
+      imgNode.style.display = 'none';
+      return;
+    }
+
+    const imgNode = document.getElementById('main-img'); 
+    imgNode.style.display = 'block';
+    imgNode.setAttribute('src', 'loader3.gif')
 
     const prompt = `${colorArr[Math.floor(Math.random()*colorArr.length)]} ${trainTypeArr[Math.floor(Math.random()*trainTypeArr.length)]} train in the ${sceneriesArr[Math.floor(Math.random()*sceneriesArr.length)]}` 
 
@@ -43,6 +115,13 @@
     });
 
     const res = await resp.json();
+
+    console.log('res',res)
+    if (res.error){
+      alert('Stala se chyba :(');
+      imgNode.style.display = 'none';
+      return;
+    }
     
     imgNode.setAttribute('src', res.data[0].url)
   } 
