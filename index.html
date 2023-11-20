@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <input id="main-input" style="width: 500px;" />  
+  <button onclick="run()">Ukaž vlak</button>
+  <span id="prompt-span"></span>
+  <div>
+    <img id="main-img" width="1024" height="768" style="margin-top: 1em;"/>
+  </div>
+</body>
+
+<script>
+  const colorArr = ['red', 'yellow', 'blue', 'green', 'purple', 'orange'];
+  const trainTypeArr = ['cargo', 'passenger', 'post']
+  const sceneriesArr = ['countryside', 'city', 'mountains', 'forest', 'desert']
+
+  async function run() {
+    const imgNode = document.getElementById('main-img'); 
+    imgNode.setAttribute('src', 'loader3.gif')
+
+    const token = document.getElementById('main-input').value;
+
+    const prompt = `${colorArr[Math.floor(Math.random()*colorArr.length)]} ${trainTypeArr[Math.floor(Math.random()*trainTypeArr.length)]} train in the ${sceneriesArr[Math.floor(Math.random()*sceneriesArr.length)]}` 
+
+    document.getElementById('prompt-span').textContent = prompt;
+
+    const resp = await fetch('https://api.openai.com/v1/images/generations', {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          'prompt': `${prompt} in kids drawing style`,
+          'n': 1,
+          'size':'512x512'
+      })
+    });
+
+    const res = await resp.json();
+    
+    imgNode.setAttribute('src', res.data[0].url)
+  } 
+        
+</script>
+</html>
